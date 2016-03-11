@@ -1,26 +1,26 @@
 package net.jibini.networking.server;
 
-/*
+/**
  * Central class for handling client connections.
  */
 public class Server
 {
-	/*
+	/**
 	 * Number of sub-servers to be used.
 	 */
 	private int subServerCount;
 	
-	/*
+	/**
 	 * Server for accepting new connections.
 	 */
 	private ReceptionServer receptionServer;
 	
-	/*
+	/**
 	 * Array of sub-servers in use.
 	 */
 	private SubServer[] subServers;
 	
-	/*
+	/**
 	 * Sets up server objects and settings.
 	 * 
 	 * @param subServerCount Number of sub-servers to be used.
@@ -32,7 +32,7 @@ public class Server
 		subServers = new SubServer[subServerCount];
 	}
 	
-	/*
+	/**
 	 * Number of sub-servers to be used.
 	 * 
 	 * @return How many sub-servers are in use.
@@ -42,7 +42,7 @@ public class Server
 		return subServerCount;
 	}
 	
-	/*
+	/**
 	 * Server for accepting new connections.
 	 * 
 	 * @return Connection reception server instance.
@@ -52,7 +52,7 @@ public class Server
 		return receptionServer;
 	}
 	
-	/*
+	/**
 	 * Array of sub-servers in use.
 	 * 
 	 * @return Array containing all sub-servers.
