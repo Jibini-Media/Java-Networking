@@ -1,10 +1,18 @@
 package net.jibini.networking.server;
 
+import java.net.ServerSocket;
+import net.jibini.networking.Connection;
+
 /**
  * Central class for handling client connections.
  */
 public class Server
 {
+	/**
+	 * Server socket for accepting connections.
+	 */
+	private ServerSocket serverSocket;
+	
 	/**
 	 * Number of sub-servers to be used.
 	 */
@@ -30,6 +38,8 @@ public class Server
 		this.subServerCount = subServerCount;
 		receptionServer = new ReceptionServer(this);
 		subServers = new SubServer[subServerCount];
+		for (int i = 0; i < subServerCount; i++)
+			subServers[i] = new SubServer(this);
 	}
 	
 	/**
@@ -40,6 +50,50 @@ public class Server
 	public int getSubServerCount()
 	{
 		return subServerCount;
+	}
+	
+	/**
+	 * Finds least full sub-server index.
+	 * 
+	 * @return Index of sub-server with the least connections.
+	 */
+	public int findLeastFull()
+	{
+		int least = -1;
+		int result = -1;
+		
+		for (int i = 0; i < subServerCount; i ++)
+		{
+			int subServerConn = subServers[i].getConnectionCount();
+			
+			if (subServerConn < least || least == -1)
+			{
+				least = subServerConn;
+				result = i;
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Handles new connections from reception.
+	 * 
+	 * @param connection Connection to assign to sub-server.
+	 */
+	public void handleNewConnection(Connection connection)
+	{
+		
+	}
+	
+	/**
+	 * Server socket for accepting connections.
+	 * 
+	 * @return Server's communication socket.
+	 */
+	public ServerSocket getServerSocket()
+	{
+		return serverSocket;
 	}
 	
 	/**
