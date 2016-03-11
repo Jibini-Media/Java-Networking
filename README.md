@@ -1,7 +1,7 @@
 ## Java-Networking
 Java library for network communication.
 
-One of the most frustrating parts of programming in Java is when you approach communication on a network.  A lot of the systems are confusing, and you really need to know what you are doing.  However, with this library, it should be a lot simpler and easy.  There are two basic goals for this project, and those are to create a useful and well made API for network communication.  The other is to make the method of communication as efficient and simple as possible.
+One of the most frustrating parts of programming in Java is when you approach communication on a network.  A lot of the systems are confusing, and you really need to know what you are doing.  However, with this library, it should be a lot simpler and easy.  There are two basic goals for this project, and one is to create a useful and well made API for network communication.  The other is to make the method of communication as efficient and simple as possible.
 
 ### Multithreaded Serving
 You just dropped a wad of cash on a new processor, but you struggle to use all of its shiny new cores.  Sub-server systems are designed to spread the load of handling connections to clients on several different handlers in different threads.  This allows simultaneous traffic to multiple clients in a more efficient manor.
