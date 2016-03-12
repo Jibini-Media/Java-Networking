@@ -12,7 +12,7 @@ public class Test
 	/**
 	 * Starting method for testing.
 	 * 
-	 * @param args standard argument array.
+	 * @param args Standard argument array.
 	 */
 	public static void main(String[] args)
 	{
