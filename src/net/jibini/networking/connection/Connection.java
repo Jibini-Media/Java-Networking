@@ -54,6 +54,7 @@ public class Connection
 	 * Sets up connection to requested location.
 	 * 
 	 * @param socket Socket to use for all communication.
+	 * @throws IOException if an error occurs while setting up a connection.
 	 */
 	public Connection(Socket socket) throws IOException
 	{
