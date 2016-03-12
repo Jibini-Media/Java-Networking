@@ -1,17 +1,39 @@
 package net.jibini.networking.server;
 
+import java.io.IOException;
 import java.net.ServerSocket;
-import net.jibini.networking.Connection;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import net.jibini.networking.connection.Connection;
+import net.jibini.networking.connection.ConnectionListener;
+import net.jibini.networking.packet.PacketListener;
 
 /**
  * Central class for handling client connections.
+ * 
+ * @author Zach Goethel
  */
 public class Server
 {
 	/**
+	 * Server's connection listener (user-defined).
+	 */
+	private ConnectionListener connectionListener = null;
+	
+	/**
+	 * Server's packet listener for all connections (user-defined).
+	 */
+	private PacketListener packetListener = null;
+	
+	/**
 	 * Server socket for accepting connections.
 	 */
 	private ServerSocket serverSocket;
+	
+	/**
+	 * Port on which the server operates.
+	 */
+	private int port;
 	
 	/**
 	 * Number of sub-servers to be used.
@@ -29,17 +51,38 @@ public class Server
 	private SubServer[] subServers;
 	
 	/**
+	 * List of all connections to server.
+	 */
+	private List<Connection> connections;
+	
+	/**
 	 * Sets up server objects and settings.
 	 * 
+	 * @param port Port on which the server should operate.
 	 * @param subServerCount Number of sub-servers to be used.
 	 */
-	public Server(int subServerCount)
+	public Server(int port, int subServerCount)
 	{
+		this.port = port;
 		this.subServerCount = subServerCount;
-		receptionServer = new ReceptionServer(this);
 		subServers = new SubServer[subServerCount];
+		connections = new CopyOnWriteArrayList<Connection>();
+	}
+	
+	/**
+	 * Starts all IO operations of server.
+	 * 
+	 * @throws IOException If an IOException occurs in startup.
+	 */
+	public void start() throws IOException
+	{
+		serverSocket = new ServerSocket(port);
+		receptionServer = new ReceptionServer(this);
 		for (int i = 0; i < subServerCount; i++)
 			subServers[i] = new SubServer(this);
+		receptionServer.startAccepting();
+		for (int i = 0; i < subServerCount; i ++)
+			subServers[i].start();
 	}
 	
 	/**
@@ -83,7 +126,35 @@ public class Server
 	 */
 	public void handleNewConnection(Connection connection)
 	{
-		
+		connections.add(connection);
+		int leastFull = findLeastFull();
+		SubServer subServer = subServers[leastFull];
+		subServer.addConnection(connection);
+		if (connectionListener != null)
+			connectionListener.onConnection(connection, subServer);
+		connection.setPacketListener(packetListener);
+	}
+	
+	/**
+	 * Sets the connection listener to the user's.
+	 * 
+	 * @param listener New connection listener to assign.
+	 */
+	public void setConnectionListener(ConnectionListener listener)
+	{
+		connectionListener = listener;
+	}
+	
+	/**
+	 * Sets the packet listener on all connections to the user's.
+	 * 
+	 * @param listener New packet listener to apply to all connections.
+	 */
+	public void setPacketListener(PacketListener listener)
+	{
+		packetListener = listener;
+		for (Connection connection : connections)
+			connection.setPacketListener(listener);
 	}
 	
 	/**

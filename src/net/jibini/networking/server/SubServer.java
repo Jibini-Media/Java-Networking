@@ -2,10 +2,12 @@ package net.jibini.networking.server;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import net.jibini.networking.Connection;
+import net.jibini.networking.connection.Connection;
 
 /**
  * Handles a portion of connections on a separate thread.
+ * 
+ * @author Zach Goethel
  */
 public class SubServer
 {
@@ -28,6 +30,14 @@ public class SubServer
 	{
 		this.parentServer = parentServer;
 		connections = new CopyOnWriteArrayList<Connection>();
+	}
+	
+	/**
+	 * Starts sub-server handling connections.
+	 */
+	public void start()
+	{
+		handlingThread.start();
 	}
 	
 	/**
@@ -69,4 +79,36 @@ public class SubServer
 	{
 		return parentServer;
 	}
+	
+	/**
+	 * Separate thread for handling connections.
+	 */
+	private Thread handlingThread = new Thread(new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			while (true)
+			{
+				for (Connection connection : connections)
+					try
+					{
+						connection.updateIO();
+					} catch (Throwable thrown)
+					{
+						System.out.println("An error occurred while updating connection IO.");
+						thrown.printStackTrace();
+					}
+				
+				try
+				{
+					Thread.sleep(5);
+				} catch (InterruptedException ex)
+				{
+					System.out.println("An error occurred in a looped sleep.");
+					ex.printStackTrace();
+				}
+			}
+		}
+	});
 }

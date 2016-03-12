@@ -1,9 +1,11 @@
-package net.jibini.networking.packets;
+package net.jibini.networking.packet;
 
 import java.io.Serializable;
 
 /**
  * Serializable base for making packets.
+ * 
+ * @author Zach Goethel
  */
 public abstract class Packet implements Serializable
 {

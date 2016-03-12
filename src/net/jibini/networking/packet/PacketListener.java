@@ -1,9 +1,11 @@
-package net.jibini.networking.packets;
+package net.jibini.networking.packet;
 
-import net.jibini.networking.Connection;
+import net.jibini.networking.connection.Connection;
 
 /**
  * Listens for packets received from connection.
+ * 
+ * @author Zach Goethel
  */
 public abstract class PacketListener
 {

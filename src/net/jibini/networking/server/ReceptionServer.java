@@ -3,10 +3,12 @@ package net.jibini.networking.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import net.jibini.networking.Connection;
+import net.jibini.networking.connection.Connection;
 
 /**
  * Accepts new client connections.
+ * 
+ * @author Zach Goethel
  */
 public class ReceptionServer
 {
