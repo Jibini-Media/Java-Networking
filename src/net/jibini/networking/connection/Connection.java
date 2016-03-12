@@ -91,8 +91,7 @@ public class Connection
 		if (sendQueue.size() > 0)
 		{
 			Packet toSend = sendQueue.get(0);
-			output.writeObject(toSend);
-			output.flush();
+			sendPacket(toSend);
 			sendQueue.remove(0);
 		}
 	}
@@ -105,6 +104,18 @@ public class Connection
 	public void queuePacket(Packet packet)
 	{
 		sendQueue.add(packet);
+	}
+	
+	/**
+	 * Skips the packet queue and sends a packet.
+	 * 
+	 * @param packet Packet to be sent over connection.
+	 * @throws IOException If an error occurs while writing.
+	 */
+	public void sendPacket(Packet packet) throws IOException
+	{
+		output.writeObject(packet);
+		output.flush();
 	}
 	
 	/**

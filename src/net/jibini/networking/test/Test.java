@@ -56,8 +56,7 @@ public class Test
 		{
 			Socket socket = new Socket("127.0.0.1", 25566);
 			Connection connection = new Connection(socket);
-			connection.queuePacket(new PacketTest());
-			connection.updateIO();
+			connection.sendPacket(new PacketTest());
 			Thread.sleep(100);
 		}
 	}
