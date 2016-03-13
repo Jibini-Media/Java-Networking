@@ -3,6 +3,8 @@ package net.jibini.networking.test;
 import java.net.Socket;
 import net.jibini.networking.connection.Connection;
 import net.jibini.networking.connection.ConnectionListener;
+import net.jibini.networking.discovery.BeatListener;
+import net.jibini.networking.discovery.Heart;
 import net.jibini.networking.packet.Packet;
 import net.jibini.networking.packet.PacketListener;
 import net.jibini.networking.server.Server;
@@ -22,6 +24,17 @@ public class Test
 	 * @throws Throwable If anything goes wrong (do not do this).
 	 */
 	public static void main(String[] args) throws Throwable
+	{
+		// testServerAndClients();
+		testHeartbeatAndListener();
+	}
+	
+	/**
+	 * Creates a test server and infinite test clients.
+	 * 
+	 * @throws Throwable If anything goes wrong (do not do this).
+	 */
+	public static void testServerAndClients() throws Throwable
 	{
 		ConnectionListener connectionListener = new ConnectionListener()
 		{
@@ -59,5 +72,30 @@ public class Test
 			connection.sendPacket(new PacketTest());
 			Thread.sleep(100);
 		}
+	}
+	
+	/**
+	 * Starts a heartbeat and listens for it.
+	 * 
+	 * @throws Throwable If anything goes wrong (do not do this).
+	 */
+	public static void testHeartbeatAndListener() throws Throwable
+	{
+		PacketTest beat = new PacketTest();
+		beat.payload = "ServIP=192.168.X.XXX";
+		Heart heart = new Heart("229.5.38.17", 25567, beat);
+		heart.start();
+		
+		BeatListener beatListener = new BeatListener("229.5.38.17", 25567)
+		{
+			@Override
+			public void onHeartBeat(Packet beat)
+			{
+				System.out.print("Received heartbeat: ");
+				System.out.println(((PacketTest) beat).payload);
+			}
+		};
+		
+		beatListener.start();
 	}
 }
