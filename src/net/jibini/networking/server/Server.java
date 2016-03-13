@@ -139,6 +139,7 @@ public class Server
 	 * Handles disconnections from sub-servers.
 	 * 
 	 * @param connection Disconnection to be handled.
+	 * @param parent Former handling sub-server parent.
 	 */
 	public void handleDisconnection(Connection connection, SubServer parent)
 	{

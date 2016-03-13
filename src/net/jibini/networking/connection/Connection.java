@@ -87,7 +87,7 @@ public class Connection
 	}
 	
 	/**
-	 * Writes pending packets and checks input.
+	 * Writes pending packets and checks input/status.
 	 * 
 	 * @throws IOException If an IO error occurrs while reading or writing.
 	 * @throws ClassNotFoundException If read object class is not found.
@@ -160,6 +160,8 @@ public class Connection
 	
 	/**
 	 * Stops reading/writing and closes connection.
+	 * 
+	 * @throws IOException If closing streams fails.
 	 */
 	public void disconnect() throws IOException
 	{
