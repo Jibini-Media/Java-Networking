@@ -25,8 +25,8 @@ public class Test
 	 */
 	public static void main(String[] args) throws Throwable
 	{
-		testServerAndClients();
-		// testHeartbeatAndListener();
+		// testServerAndClients();
+		testHeartbeatAndListener();
 	}
 	
 	/**
@@ -108,5 +108,8 @@ public class Test
 		};
 		
 		beatListener.start();
+		Thread.sleep(3000);
+		heart.stop();
+		beatListener.stop();
 	}
 }
