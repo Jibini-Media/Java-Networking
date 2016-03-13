@@ -74,15 +74,15 @@ public class Test
 		testServer.setPacketListener(packetListener);
 		testServer.start();
 		
-		while (true)
+		for (int i = 0; i < 5; i ++)
 		{
 			Socket socket = new Socket("127.0.0.1", 25566);
 			Connection connection = new Connection(socket);
 			connection.sendPacket(new PacketTest());
 			Thread.sleep(500);
-			connection.disconnect();
-			Thread.sleep(500);
 		}
+		
+		testServer.stop();
 	}
 	
 	/**

@@ -13,6 +13,11 @@ import net.jibini.networking.connection.Connection;
 public class ReceptionServer
 {
 	/**
+	 * Whether the reception server is accepting.
+	 */
+	private boolean accepting = false;
+	
+	/**
 	 * Server that owns the reception server.
 	 */
 	private Server parentServer;
@@ -38,7 +43,16 @@ public class ReceptionServer
 	 */
 	public void startAccepting()
 	{
+		accepting = true;
 		receptionThread.start();
+	}
+	
+	/**
+	 * Stops accepting new connections.
+	 */
+	public void stopAccepting()
+	{
+		accepting = false;
 	}
 	
 	/**
@@ -59,7 +73,7 @@ public class ReceptionServer
 		@Override
 		public void run()
 		{
-			while (true)
+			while (accepting)
 			{
 				try
 				{
@@ -68,8 +82,11 @@ public class ReceptionServer
 					parentServer.handleNewConnection(conn);
 				} catch (IOException ex)
 				{
-					System.out.println("An error occurred while setting up a new connection.");
-					ex.printStackTrace();
+					if (accepting)
+					{
+						System.out.println("An error occurred while setting up a new connection.");
+						ex.printStackTrace();
+					}
 				}
 			}
 		}

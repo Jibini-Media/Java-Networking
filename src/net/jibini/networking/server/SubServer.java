@@ -13,6 +13,11 @@ import net.jibini.networking.connection.Connection;
 public class SubServer
 {
 	/**
+	 * Whether the sub-server is managing connections.
+	 */
+	private boolean running = false;
+	
+	/**
 	 * Server that owns the sub-server.
 	 */
 	private Server parentServer;
@@ -38,7 +43,16 @@ public class SubServer
 	 */
 	public void start()
 	{
+		running = true;
 		handlingThread.start();
+	}
+	
+	/**
+	 * Stops sub-server from handling connections.
+	 */
+	public void stop()
+	{
+		running = false;
 	}
 	
 	/**
@@ -89,7 +103,7 @@ public class SubServer
 		@Override
 		public void run()
 		{
-			while (true)
+			while (running)
 			{
 				for (Connection connection : connections)
 					try

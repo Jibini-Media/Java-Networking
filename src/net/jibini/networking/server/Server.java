@@ -150,6 +150,26 @@ public class Server
 	}
 	
 	/**
+	 * Stops all server operations and nullifies objects.
+	 * 
+	 * @throws IOException If an error occurs while closing.
+	 */
+	public void stop() throws IOException
+	{
+		receptionServer.stopAccepting();
+		for (Connection connection : connections)
+			connection.disconnect();
+		for (SubServer subServer : subServers)
+			subServer.stop();
+		serverSocket.close();
+		
+		receptionServer = null;
+		serverSocket = null;
+		subServers = null;
+		connections.clear();
+	}
+	
+	/**
 	 * Sets the connection listener to the user's.
 	 * 
 	 * @param listener New connection listener to assign.
