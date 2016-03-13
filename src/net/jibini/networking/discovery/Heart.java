@@ -16,6 +16,11 @@ import net.jibini.networking.packet.Packet;
 public class Heart
 {
 	/**
+	 * Whether the heart is broadcasting.
+	 */
+	private boolean running = false;
+	
+	/**
 	 * Name of the multicast group.
 	 */
 	private String groupName;
@@ -58,11 +63,20 @@ public class Heart
 	}
 	
 	/**
-	 * Starts the heartbeat thread.
+	 * Starts the heartbeat broadcast thread.
 	 */
 	public void start()
 	{
+		running = true;
 		beatingThread.start();
+	}
+	
+	/**
+	 * Stops the heartbeat broadcast thread.
+	 */
+	public void stop()
+	{
+		running = false;
 	}
 	
 	/**
@@ -132,7 +146,7 @@ public class Heart
 		@Override
 		public void run()
 		{
-			while (true)
+			while (running)
 			{
 				try
 				{
@@ -148,6 +162,8 @@ public class Heart
 					ex.printStackTrace();
 				}
 			}
+			
+			multicastSocket.close();
 		}
 	});
 }

@@ -16,6 +16,11 @@ import net.jibini.networking.packet.PacketListener;
 public class Server
 {
 	/**
+	 * Whether the server is currently operating.
+	 */
+	private boolean running = false;
+	
+	/**
 	 * Server's connection listener (user-defined).
 	 */
 	private ConnectionListener connectionListener = null;
@@ -83,6 +88,7 @@ public class Server
 		receptionServer.startAccepting();
 		for (int i = 0; i < subServerCount; i ++)
 			subServers[i].start();
+		running = true;
 	}
 	
 	/**
@@ -156,6 +162,7 @@ public class Server
 	 */
 	public void stop() throws IOException
 	{
+		running = false;
 		receptionServer.stopAccepting();
 		for (Connection connection : connections)
 			connection.disconnect();
@@ -189,6 +196,16 @@ public class Server
 		packetListener = listener;
 		for (Connection connection : connections)
 			connection.setPacketListener(listener);
+	}
+	
+	/**
+	 * Whether the server is currently operating.
+	 * 
+	 * @return If the server is currently open.
+	 */
+	public boolean isRunning()
+	{
+		return running;
 	}
 	
 	/**

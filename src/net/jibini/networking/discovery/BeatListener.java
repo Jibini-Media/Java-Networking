@@ -16,6 +16,11 @@ import net.jibini.networking.packet.Packet;
 public abstract class BeatListener
 {
 	/**
+	 * Whether the beat listener is listening.
+	 */
+	private boolean listening = false;
+	
+	/**
 	 * Name of the multicast group.
 	 */
 	private String groupName;
@@ -50,7 +55,16 @@ public abstract class BeatListener
 	 */
 	public void start()
 	{
+		listening = true;
 		listeningThread.start();
+	}
+	
+	/**
+	 * Stops listening for heartbeats.
+	 */
+	public void stop()
+	{
+		listening = false;
 	}
 	
 	/**
@@ -86,6 +100,16 @@ public abstract class BeatListener
 	}
 	
 	/**
+	 * Whether the beat listener is listening.
+	 * 
+	 * @return If the listening thread is active.
+	 */
+	public boolean isListening()
+	{
+		return listening;
+	}
+	
+	/**
 	 * Name of the multicast group.
 	 * 
 	 * @return User-assigned name of the multicast group.
@@ -113,7 +137,7 @@ public abstract class BeatListener
 		@Override
 		public void run()
 		{
-			while (true)
+			while (listening)
 			{
 				try
 				{
@@ -126,6 +150,8 @@ public abstract class BeatListener
 					System.out.println("An error occurred while checking multicast.");
 				}
 			}
+			
+			multicastSocket.close();
 		}
 	});
 	

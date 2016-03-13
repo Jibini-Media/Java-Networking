@@ -56,6 +56,16 @@ public class ReceptionServer
 	}
 	
 	/**
+	 * Whether the reception server is accepting.
+	 * 
+	 * @return If the reception thread is running.
+	 */
+	public boolean isAccepting()
+	{
+		return accepting;
+	}
+	
+	/**
 	 * Server that owns the sub-server.
 	 * 
 	 * @return Parent server of the sub-server.

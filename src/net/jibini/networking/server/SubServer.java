@@ -76,6 +76,16 @@ public class SubServer
 	}
 	
 	/**
+	 * Whether the sub-server is managing connections.
+	 * 
+	 * @return If the sub-server threads are active.
+	 */
+	public boolean isRunning()
+	{
+		return running;
+	}
+	
+	/**
 	 * Number of connections currently being managed.
 	 * 
 	 * @return Amount of connections being managed.
