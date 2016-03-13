@@ -35,6 +35,7 @@ public abstract class BeatListener
 	 * 
 	 * @param groupName Name of the multicast group.
 	 * @param port Port to liston on for beats.
+	 * @throws IOException If multicast setup fails.
 	 */
 	public BeatListener(String groupName, int port) throws IOException
 	{

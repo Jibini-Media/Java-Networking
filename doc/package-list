@@ -1,4 +1,5 @@
 net.jibini.networking.connection
+net.jibini.networking.discovery
 net.jibini.networking.packet
 net.jibini.networking.server
 net.jibini.networking.test

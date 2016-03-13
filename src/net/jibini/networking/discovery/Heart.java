@@ -67,6 +67,8 @@ public class Heart
 	
 	/**
 	 * Broadcasts a beat via multicast.
+	 * 
+	 * @throws IOException If multicast broadcast fails.
 	 */
 	public void beat() throws IOException
 	{
@@ -107,6 +109,7 @@ public class Heart
 	 * Sets the packet to be broadcasted.
 	 * 
 	 * @param beat New packet to be broadcasted as a heartbeat.
+	 * @throws IOException If datagram packet creation fails.
 	 */
 	public void setBeat(Packet beat) throws IOException
 	{
