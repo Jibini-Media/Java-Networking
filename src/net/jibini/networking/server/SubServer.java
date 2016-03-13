@@ -1,5 +1,6 @@
 package net.jibini.networking.server;
 
+import java.net.SocketException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import net.jibini.networking.connection.Connection;
@@ -93,11 +94,17 @@ public class SubServer
 				for (Connection connection : connections)
 					try
 					{
-						connection.updateIO();
+						if (connection.isConnected())
+							connection.updateIO();
+						else
+							parentServer.handleDisconnection(connection, SubServer.this);
 					} catch (Throwable thrown)
 					{
-						System.out.println("An error occurred while updating connection IO.");
-						thrown.printStackTrace();
+						if (!(thrown instanceof SocketException))
+						{
+							System.out.println("An error occurred while updating connection IO.");
+							thrown.printStackTrace();
+						}
 					}
 				
 				try

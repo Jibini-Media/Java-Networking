@@ -136,6 +136,19 @@ public class Server
 	}
 	
 	/**
+	 * Handles disconnections from sub-servers.
+	 * 
+	 * @param connection Disconnection to be handled.
+	 */
+	public void handleDisconnection(Connection connection, SubServer parent)
+	{
+		connections.remove(connection);
+		parent.removeConnection(connection);
+		if (connectionListener != null)
+			connectionListener.onDisconnection(connection, parent);
+	}
+	
+	/**
 	 * Sets the connection listener to the user's.
 	 * 
 	 * @param listener New connection listener to assign.

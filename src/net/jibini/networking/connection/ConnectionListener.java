@@ -16,4 +16,12 @@ public abstract class ConnectionListener
 	 * @param parent Assigned sub-server of connection.
 	 */
 	public abstract void onConnection(Connection connection, SubServer parent);
+	
+	/**
+	 * Method called by server on a disconnection.
+	 * 
+	 * @param connection Connection that is now invalid.
+	 * @param parent Former parent sub-server.
+	 */
+	public abstract void onDisconnection(Connection connection, SubServer parent);
 }

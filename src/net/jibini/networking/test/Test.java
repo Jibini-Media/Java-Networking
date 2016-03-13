@@ -25,8 +25,8 @@ public class Test
 	 */
 	public static void main(String[] args) throws Throwable
 	{
-		// testServerAndClients();
-		testHeartbeatAndListener();
+		testServerAndClients();
+		// testHeartbeatAndListener();
 	}
 	
 	/**
@@ -46,6 +46,15 @@ public class Test
 				System.out.print(" on ");
 				System.out.println(parent);
 			}
+
+			@Override
+			public void onDisconnection(Connection connection, SubServer parent)
+			{
+				System.out.println("Disconnection detected.");
+				System.out.print(connection);
+				System.out.print(" from ");
+				System.out.println(parent);
+			}
 		};
 		
 		PacketListener packetListener = new PacketListener()
@@ -60,7 +69,7 @@ public class Test
 			}
 		};
 		
-		Server testServer = new Server(25566, 4);
+		Server testServer = new Server(25566, 8);
 		testServer.setConnectionListener(connectionListener);
 		testServer.setPacketListener(packetListener);
 		testServer.start();
@@ -70,7 +79,9 @@ public class Test
 			Socket socket = new Socket("127.0.0.1", 25566);
 			Connection connection = new Connection(socket);
 			connection.sendPacket(new PacketTest());
-			Thread.sleep(100);
+			Thread.sleep(500);
+			connection.disconnect();
+			Thread.sleep(500);
 		}
 	}
 	

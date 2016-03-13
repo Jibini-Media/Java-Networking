@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import net.jibini.networking.packet.Packet;
 import net.jibini.networking.packet.PacketListener;
+import net.jibini.networking.packet.PacketPing;
 
 /**
  * Handles server-to-client or client-to-server connections.
@@ -20,6 +21,11 @@ import net.jibini.networking.packet.PacketListener;
  */
 public class Connection
 {
+	/**
+	 * Whether the connection is active.
+	 */
+	private boolean connected = false;
+	
 	/**
 	 * Connection's packet listener (user-defined).
 	 */
@@ -51,6 +57,16 @@ public class Connection
 	private List<Packet> sendQueue;
 	
 	/**
+	 * Nanotime of last ping packet received.
+	 */
+	private long lastPingReceived = -1;
+	
+	/**
+	 * Nanotime of last ping packet sent.
+	 */
+	private long lastPingSent = -1;
+	
+	/**
 	 * Sets up connection to requested location.
 	 * 
 	 * @param socket Socket to use for all communication.
@@ -67,6 +83,7 @@ public class Connection
 		bufInput = new BufferedInputStream(inputStream);
 		input = new ObjectInputStream(bufInput);
 		sendQueue = new CopyOnWriteArrayList<Packet>();
+		connected = true;
 	}
 	
 	/**
@@ -77,6 +94,26 @@ public class Connection
 	 */
 	public void updateIO() throws IOException, ClassNotFoundException
 	{
+		long nano = System.nanoTime();
+		if (lastPingReceived == -1)
+			lastPingReceived = nano;
+		long nanoSinceReceived = nano - lastPingReceived;
+		double secondsSinceReceived = (double) nanoSinceReceived / 1000000000;
+		long nanoSinceSent = nano - lastPingSent;
+		double secondsSinceSent = (double) nanoSinceSent / 1000000000;
+		
+		if (secondsSinceReceived >= 2)
+		{
+			disconnect();
+			return;
+		}
+
+		if (secondsSinceSent >= 0.5)
+		{
+			sendPacket(new PacketPing());
+			lastPingSent = nano;
+		}
+		
 		if (bufInput.available() != 0)
 		{
 			Object read = input.readObject();
@@ -84,7 +121,10 @@ public class Connection
 			if (read instanceof Packet)
 			{
 				Packet packet = (Packet) read;
-				packetListener.onPacketReceived(packet, this);
+				if (packetListener != null)
+					packetListener.onPacketReceived(packet, this);
+				if (read instanceof PacketPing)
+					lastPingReceived = nano;
 			}
 		}
 		
@@ -119,6 +159,18 @@ public class Connection
 	}
 	
 	/**
+	 * Stops reading/writing and closes connection.
+	 */
+	public void disconnect() throws IOException
+	{
+		connected = false;
+		input.close();
+		output.close();
+		bufInput.close();
+		socket.close();
+	}
+	
+	/**
 	 * Sets the packet listener to the user's.
 	 * 
 	 * @param listener New packet listener to assign.
@@ -126,6 +178,16 @@ public class Connection
 	public void setPacketListener(PacketListener listener)
 	{
 		packetListener = listener;
+	}
+	
+	/**
+	 * Whether the connection is active.
+	 * 
+	 * @return Whether or not connection is reading/writing.
+	 */
+	public boolean isConnected()
+	{
+		return connected;
 	}
 	
 	/**
