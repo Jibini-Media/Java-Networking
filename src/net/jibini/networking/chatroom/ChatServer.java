@@ -1,7 +1,10 @@
 package net.jibini.networking.chatroom;
 
 import java.io.IOException;
-import java.net.Socket;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import net.jibini.networking.chatroom.packet.PacketLoginAcceptance;
+import net.jibini.networking.chatroom.packet.PacketLoginRequest;
 import net.jibini.networking.connection.Connection;
 import net.jibini.networking.connection.ConnectionListener;
 import net.jibini.networking.packet.Packet;
@@ -20,6 +23,11 @@ public class ChatServer
 	 * Server for managing connections to chatroom.
 	 */
 	private Server chatServer;
+	
+	/**
+	 * List of profiles of connected chat users.
+	 */
+	private List<ChatUser> chatUsers;
 	
 	/**
 	 * Sets up the server and starts operations.
@@ -47,6 +55,8 @@ public class ChatServer
 			}
 		}
 		
+		// Creates the chat user list.
+		chatUsers = new CopyOnWriteArrayList<ChatUser>();
 		// Sets up and starts the server object.
 		initChatServer(port, subServers);
 	}
@@ -73,6 +83,43 @@ public class ChatServer
 	}
 	
 	/**
+	 * Called when login request is received.
+	 * 
+	 * @param username Requested username for connection.
+	 * @param connection Connection which received the packet.
+	 * @throws IOException If response packet write fails.
+	 */
+	private void handleLoginRequest(String username, Connection connection) throws IOException
+	{
+		// Decides whether username is in use.
+		boolean usernameUsed = false;
+		for (ChatUser user : chatUsers)
+			if (user.username.equals(username))
+				usernameUsed = true;
+		
+		// Empty packet and host address.
+		PacketLoginAcceptance acceptance;
+		String hostAddress = connection.getSocket().getInetAddress().getHostAddress();
+		
+		// Replies to the client about acceptance.
+		if (usernameUsed)
+		{
+			String reason = "Username is already in use.";
+			acceptance = new PacketLoginAcceptance(false, reason);
+			connection.sendPacket(acceptance);
+			connection.disconnect();
+			System.out.println(hostAddress + " denied for reason: " + reason);
+		} else
+		{
+			acceptance = new PacketLoginAcceptance(true, null);
+			connection.sendPacket(acceptance);
+			ChatUser user = new ChatUser(username, connection);
+			chatUsers.add(user);
+			System.out.println(hostAddress + " accepted as " + username);
+		}
+	}
+	
+	/**
 	 * Handles new connections and disconnections.
 	 */
 	private ConnectionListener connectionListener = new ConnectionListener()
@@ -80,19 +127,17 @@ public class ChatServer
 		@Override
 		public void onConnection(Connection connection, SubServer parent)
 		{
-			// Prints data about the new connection.
-			Socket connectSocket = connection.getSocket();
-			String ipAddress = connectSocket.getInetAddress().getHostAddress();
-			System.out.println("A new client has connected from " + ipAddress);
+			// Prints connection data.
+			String hostAddress = connection.getSocket().getInetAddress().getHostAddress();
+			System.out.println("Connection from " + hostAddress);
 		}
 
 		@Override
 		public void onDisconnection(Connection connection, SubServer parent)
 		{
-			// Prints data about the disconnection.
-			Socket disconnectSocket = connection.getSocket();
-			String ipAddress = disconnectSocket.getInetAddress().getHostAddress();
-			System.out.println("The client at " + ipAddress + " has disconnected.");
+			// Prints disconnection data.
+			String hostAddress = connection.getSocket().getInetAddress().getHostAddress();
+			System.out.println(hostAddress + " disconnected.");
 		}
 	};
 	
@@ -104,10 +149,16 @@ public class ChatServer
 		@Override
 		public void onPacketReceived(Packet packet, Connection connection)
 		{
-			// Prints data on the received packet.
-			Socket receiveSocket = connection.getSocket();
-			String ipAddress = receiveSocket.getInetAddress().getHostAddress();
-			System.out.println("A packet has been received from " + ipAddress);
+			try
+			{
+				// Handles packet based on types.
+				if (packet instanceof PacketLoginRequest)
+					handleLoginRequest(((PacketLoginRequest) packet).username, connection);
+			} catch (Throwable thrown)
+			{
+				System.out.println("An error occurred while receiving a packet.");
+				thrown.printStackTrace();
+			}
 		}
 	};
 	
