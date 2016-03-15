@@ -1,3 +1,6 @@
+net.jibini.networking.chatroom
+net.jibini.networking.chatroom.packet
+net.jibini.networking.client
 net.jibini.networking.connection
 net.jibini.networking.discovery
 net.jibini.networking.packet
