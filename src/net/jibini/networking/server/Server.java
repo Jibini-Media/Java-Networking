@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import net.jibini.networking.connection.Connection;
 import net.jibini.networking.connection.ConnectionListener;
+import net.jibini.networking.packet.Packet;
 import net.jibini.networking.packet.PacketListener;
 
 /**
@@ -123,6 +124,29 @@ public class Server
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Queues a packet on all connections.
+	 * 
+	 * @param packet Packet to queue on connections.
+	 */
+	public void queueGlobal(Packet packet)
+	{
+		for (Connection connection : connections)
+			connection.queuePacket(packet);
+	}
+	
+	/**
+	 * Sends a packet from all connections.
+	 * 
+	 * @param packet Packet to send from connections.
+	 * @throws IOException If any packet writes fail.
+	 */
+	public void sendGlobal(Packet packet) throws IOException
+	{
+		for (Connection connection : connections)
+			connection.sendPacket(packet);
 	}
 	
 	/**

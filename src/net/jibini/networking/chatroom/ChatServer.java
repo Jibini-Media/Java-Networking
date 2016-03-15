@@ -3,6 +3,7 @@ package net.jibini.networking.chatroom;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import net.jibini.networking.chatroom.packet.PacketChatMessage;
 import net.jibini.networking.chatroom.packet.PacketLoginAcceptance;
 import net.jibini.networking.chatroom.packet.PacketLoginRequest;
 import net.jibini.networking.connection.Connection;
@@ -63,6 +64,9 @@ public class ChatServer
 	
 	/**
 	 * Sets up and starts the server object.
+	 * 
+	 * @param port Port on which to start the server.
+	 * @param subServers How many sub-servers to use.
 	 */
 	private void initChatServer(int port, int subServers)
 	{
@@ -120,6 +124,35 @@ public class ChatServer
 	}
 	
 	/**
+	 * Called when a chat message is received.
+	 * 
+	 * @param message Message chatted by user.
+	 * @param connection Message packet recipient.
+	 */
+	private void handleReceivedChatMessage(String message, Connection connection) throws IOException
+	{
+		// Broadcasts chat packet to all users.
+		ChatUser user = getUserFromConnection(connection);
+		PacketChatMessage chatPacket = new PacketChatMessage(user.username, message);
+		chatServer.queueGlobal(chatPacket);
+	}
+	
+	/**
+	 * Finds the corresponding client for a connection.
+	 * 
+	 * @param connection Connection to find user for.
+	 * @return User corresponding to the connection, null if not.
+	 */
+	public ChatUser getUserFromConnection(Connection connection)
+	{
+		// Searches users for connection.
+		for (ChatUser client : chatUsers)
+			if (client.connection == connection)
+				return client;
+		return null;
+	}
+	
+	/**
 	 * Handles new connections and disconnections.
 	 */
 	private ConnectionListener connectionListener = new ConnectionListener()
@@ -137,6 +170,8 @@ public class ChatServer
 		{
 			// Prints disconnection data.
 			String hostAddress = connection.getSocket().getInetAddress().getHostAddress();
+			ChatUser user = getUserFromConnection(connection);
+			chatUsers.remove(user);
 			System.out.println(hostAddress + " disconnected.");
 		}
 	};
@@ -154,6 +189,8 @@ public class ChatServer
 				// Handles packet based on types.
 				if (packet instanceof PacketLoginRequest)
 					handleLoginRequest(((PacketLoginRequest) packet).username, connection);
+				else if (packet instanceof PacketChatMessage)
+					handleReceivedChatMessage(((PacketChatMessage) packet).message, connection);
 			} catch (Throwable thrown)
 			{
 				System.out.println("An error occurred while receiving a packet.");

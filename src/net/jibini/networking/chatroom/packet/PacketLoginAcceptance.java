@@ -23,6 +23,9 @@ public class PacketLoginAcceptance extends Packet
 	
 	/**
 	 * Stores new packet data.
+	 * 
+	 * @param accepted Whether the server accepted the login.
+	 * @param reason Reason the server denied the login.
 	 */
 	public PacketLoginAcceptance(boolean accepted, String reason)
 	{
