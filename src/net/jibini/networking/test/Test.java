@@ -1,6 +1,7 @@
 package net.jibini.networking.test;
 
 import java.net.Socket;
+import net.jibini.networking.client.Client;
 import net.jibini.networking.connection.Connection;
 import net.jibini.networking.connection.ConnectionListener;
 import net.jibini.networking.discovery.BeatListener;
@@ -25,8 +26,8 @@ public class Test
 	 */
 	public static void main(String[] args) throws Throwable
 	{
-		// testServerAndClients();
-		testHeartbeatAndListener();
+		testServerAndClients();
+		// testHeartbeatAndListener();
 	}
 	
 	/**
@@ -74,15 +75,11 @@ public class Test
 		testServer.setPacketListener(packetListener);
 		testServer.start();
 		
-		for (int i = 0; i < 5; i ++)
-		{
-			Socket socket = new Socket("127.0.0.1", 25566);
-			Connection connection = new Connection(socket);
-			connection.sendPacket(new PacketTest());
-			Thread.sleep(500);
-		}
-		
-		testServer.stop();
+		Socket socket = new Socket("127.0.0.1", 25566);
+		Connection connection = new Connection(socket);
+		connection.sendPacket(new PacketTest());
+		Client netClient = new Client(connection);
+		netClient.start();
 	}
 	
 	/**
