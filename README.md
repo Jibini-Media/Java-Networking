@@ -1,5 +1,7 @@
-## Java-Networking
+## Java-Networking - Inactive
 Java library for network communication.
+
+Efforts have been moved towards the new project, [JStitch](https://github.com/Jibini-Media/jstitch).
 
 One of the most frustrating parts of programming in Java is when you approach communication on a network.  A lot of the systems are confusing, and you really need to know what you are doing.  However, with this library, it should be a lot simpler and easy.  There are two basic goals for this project; goal one is to create a useful and well made API for network communication.  The other is to make the method of communication as efficient and simple as possible.
 
